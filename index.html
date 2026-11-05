@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Data Mahasiswa - Praktikum 6 (AJAX &amp; Fetch API)</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1. Header Aplikasi -->
+    <header class="site-header">
+        <div class="container header-brand">
+            <a href="index.html" class="brand-logo" title="Beranda SIMA">
+                <img src="img/logo-sima.svg" alt="Logo Resmi SIMA Kampus" width="48" height="48">
+            </a>
+            <div>
+                <h1>Sistem Informasi Data Mahasiswa (SIMA)</h1>
+                <p>Integrasi Penuh Frontend-Backend Asinkron Menggunakan AJAX &amp; Fetch API</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Sticky Navigation -->
+    <nav class="site-nav">
+        <div class="container">
+            <ul>
+                <li><a href="#informasi">Informasi Sistem</a></li>
+                <li><a href="#daftar-mahasiswa">Daftar Mahasiswa</a></li>
+                <li><a href="#form-tambah">Tambah Mahasiswa</a></li>
+                <li><a href="api/mahasiswa.php" target="_blank" rel="noopener noreferrer">Endpoint JSON &nearr;</a></li>
+                <li><a href="https://kampus.ac.id" target="_blank" rel="noopener noreferrer">Portal Kampus &UpperRightArrow;</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Konten Utama -->
+    <main>
+        <div class="container">
+
+            <!-- Kotak Notifikasi Dinamis (Status Kirim / Hapus Data) -->
+            <div id="alert-box" class="alert-box" style="display: none;" role="alert"></div>
+
+            <!-- 3. Section Informasi Aplikasi -->
+            <section id="informasi" class="content-section">
+                <div class="section-header">
+                    <h2>Tentang Integrasi Aplikasi (Tahap Akhir)</h2>
+                    <p>Komunikasi data asinkron dua arah antara Frontend (JavaScript Fetch API) dan Backend (PHP REST API &amp; MySQL).</p>
+                </div>
+                <p>
+                    Halaman ini adalah puncak dari seluruh rangkaian <strong>Praktikum 1 hingga Praktikum 6</strong>. 
+                    Seluruh operasi pengelolaan data—mulai dari memuat tabel, pencarian langsung (*live search*), penambahan data baru, 
+                    hingga penghapusan—berjalan secara <strong>asinkron tanpa muat ulang halaman (Zero Full-Page Reload)</strong> 
+                    melalui <strong>Fetch API</strong> yang terhubung ke REST API PHP dan basis data MySQL.
+                </p>
+
+                <div class="info-grid">
+                    <article class="info-card">
+                        <h3>Total Mahasiswa Aktif</h3>
+                        <p id="total-mahasiswa-badge" class="counter-highlight">0</p>
+                    </article>
+                    <article class="info-card">
+                        <h3>Metode Komunikasi</h3>
+                        <p>Fetch API (JSON)</p>
+                    </article>
+                    <article class="info-card">
+                        <h3>Arsitektur Aplikasi</h3>
+                        <p>Decoupled Full-Stack</p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- 4. Section Daftar Mahasiswa & Toolbar -->
+            <section id="daftar-mahasiswa" class="content-section">
+                <div class="section-header">
+                    <h2>Daftar Mahasiswa (Live Data)</h2>
+                    <p>Data ditarik secara asinkron dari backend REST API menggunakan HTTP GET.</p>
+                </div>
+
+                <!-- Toolbar: Pencarian Real-Time & Status -->
+                <div class="table-toolbar">
+                    <div class="search-box">
+                        <input 
+                            type="search" 
+                            id="input-search" 
+                            class="search-input" 
+                            placeholder="Cari mahasiswa secara live...">
+                    </div>
+                    <div id="total-mahasiswa-info" class="status-summary">
+                        Memuat data...
+                    </div>
+                </div>
+
+                <!-- Tabel Data Mahasiswa -->
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Foto</th>
+                                <th>npm</th>
+                                <th>Nama Lengkap</th>
+                                <th>Program Studi</th>
+                                <th>Angkatan</th>
+                                <th>Email</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-body-mahasiswa">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                                    Memuat data mahasiswa dari server...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 5. Section Form Tambah Mahasiswa (Fetch API POST) -->
+            <section id="form-tambah" class="content-section">
+                <div class="section-header">
+                    <h2>Tambah Mahasiswa Baru</h2>
+                    <p>Formulir dikirim ke backend REST API secara asinkron menggunakan Fetch API POST tanpa reload halaman.</p>
+                </div>
+
+                <form id="form-tambah-mahasiswa" class="app-form">
+                    <fieldset>
+                        <legend>Data Identitas Mahasiswa</legend>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="npm" class="form-label">Nomor Induk Mahasiswa (npm):</label>
+                                <input 
+                                    type="text" 
+                                    id="npm" 
+                                    name="npm" 
+                                    class="form-input" 
+                                    placeholder="Contoh: 230101001" 
+                                    required 
+                                    pattern="[0-9]{8,12}">
+                                <span class="form-help">* Wajib 8-12 digit angka.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="nama" class="form-label">Nama Lengkap:</label>
+                                <input 
+                                    type="text" 
+                                    id="nama" 
+                                    name="nama" 
+                                    class="form-input" 
+                                    placeholder="Contoh: Ahmad Fauzi" 
+                                    required 
+                                    minlength="3">
+                                <span class="form-help">* Minpmal 3 karakter.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="program_studi" class="form-label">Program Studi:</label>
+                                <select id="program_studi" name="program_studi" class="form-select" required>
+                                    <option value="">-- Pilih Program Studi --</option>
+                                    <option value="Teknik Informatika">Teknik Informatika</option>
+                                    <option value="Sistem Informasi">Sistem Informasi</option>
+                                    <option value="Teknologi Informasi">Teknologi Informasi</option>
+                                    <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
+                                </select>
+                                <span class="form-help">* Pilih salah satu program studi.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="angkatan" class="form-label">Tahun Angkatan:</label>
+                                <input 
+                                    type="number" 
+                                    id="angkatan" 
+                                    name="angkatan" 
+                                    class="form-input" 
+                                    placeholder="Contoh: 2024" 
+                                    required 
+                                    min="2018" 
+                                    max="2026">
+                                <span class="form-help">* Tahun antara 2018 - 2026.</span>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="email" class="form-label">Alamat Email:</label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    class="form-input" 
+                                    placeholder="Contoh: ahmad.fauzi@example.com" 
+                                    required>
+                                <span class="form-help">* Masukkan alamat email valid.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" id="btn-submit" class="btn btn-primary">Simpan via Fetch API</button>
+                            <button type="reset" class="btn btn-secondary">Reset Formulir</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 Praktikum Pemrograman Web - Pertemuan 6: Komunikasi Data Asinkron (AJAX &amp; Fetch API).</p>
+            <p>Puncak Project Berkelanjutan: Sistem Informasi Data Mahasiswa (Tahap 6/6 Selesai)</p>
+            <p>
+                Hubungi Administrator: <a href="mailto:admin.sima@kampus.ac.id">admin.sima@kampus.ac.id</a> | 
+                Dokumentasi: <a href="https://github.com" target="_blank" rel="noopener noreferrer">Repository GitHub</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Modal Dialog Edit Mahasiswa (Fetch API PUT) -->
+    <div id="modal-edit" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="modal-edit-title">Edit Data Mahasiswa</h3>
+                <button type="button" class="modal-close" onclick="closeEditModal()" aria-label="Tutup Dialog">&times;</button>
+            </div>
+            <form id="form-edit-mahasiswa">
+                <div class="modal-body">
+                    <input type="hidden" id="edit-id" name="id">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="edit-npm" class="form-label">npm:</label>
+                            <input 
+                                type="text" 
+                                id="edit-npm" 
+                                name="npm" 
+                                class="form-input" 
+                                required 
+                                pattern="[0-9]{8,12}">
+                            <span class="form-help">* Wajib 8-12 digit angka.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-nama" class="form-label">Nama Lengkap:</label>
+                            <input 
+                                type="text" 
+                                id="edit-nama" 
+                                name="nama" 
+                                class="form-input" 
+                                required 
+                                minlength="3">
+                            <span class="form-help">* Minpmal 3 karakter.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-prodi" class="form-label">Program Studi:</label>
+                            <select id="edit-prodi" name="program_studi" class="form-select" required>
+                                <option value="">-- Pilih Program Studi --</option>
+                                <option value="Teknik Informatika">Teknik Informatika</option>
+                                <option value="Sistem Informasi">Sistem Informasi</option>
+                                <option value="Teknologi Informasi">Teknologi Informasi</option>
+                                <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-angkatan" class="form-label">Tahun Angkatan:</label>
+                            <input 
+                                type="number" 
+                                id="edit-angkatan" 
+                                name="angkatan" 
+                                class="form-input" 
+                                required 
+                                min="2018" 
+                                max="2026">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="edit-email" class="form-label">Alamat Email:</label>
+                            <input 
+                                type="email" 
+                                id="edit-email" 
+                                name="email" 
+                                class="form-input" 
+                                required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Batal</button>
+                    <button type="submit" id="btn-submit-edit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script JavaScript Terintegrasi -->
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,466 @@
+/* ==========================================================================
+   Praktikum 6: Komunikasi Data Asinkron Menggunakan AJAX & Fetch API
+   Sistem Informasi Data Mahasiswa (SIMA) - Waktu Praktikum: 90 Menit
+   ========================================================================== */
+
+/* 1. Reset Global & CSS Variables */
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --bg-body: #f8fafc;
+    --bg-white: #ffffff;
+    --border: #e2e8f0;
+    --radius: 8px;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg-body);
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* 2. Header & Navigasi (Flexbox Layout) */
+.site-header {
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: #ffffff;
+    padding: 24px 0;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.brand-logo img {
+    display: block;
+    border-radius: var(--radius);
+}
+
+.site-header h1 {
+    font-size: 1.6rem;
+}
+
+.site-header p {
+    color: #bfdbfe;
+    font-size: 0.95rem;
+}
+
+.site-nav {
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.site-nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.site-nav a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    transition: 0.2s;
+}
+
+.site-nav a:hover {
+    color: var(--primary);
+    background-color: var(--primary-light);
+}
+
+/* 3. Section & Kartu Informasi */
+main {
+    padding: 24px 0;
+}
+
+.content-section {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.section-header {
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary-light);
+}
+
+.section-header h2 {
+    font-size: 1.3rem;
+    color: var(--primary);
+}
+
+.info-grid {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.info-card {
+    flex: 1;
+    background: #f1f5f9;
+    border-left: 4px solid var(--primary);
+    padding: 14px 18px;
+    border-radius: var(--radius);
+}
+
+.info-card h3 {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.info-card p {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* Alert Box */
+.alert-box {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+/* Toolbar & Pencarian */
+.table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    outline: none;
+    min-width: 260px;
+}
+
+.search-input:focus {
+    border-color: var(--primary);
+}
+
+.status-summary {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* 4. Penataan Tabel Data & Media */
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 12px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.data-table th, .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.data-table thead {
+    background-color: #f1f5f9;
+}
+
+.data-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.avatar-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.badge {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.link-email {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.link-email:hover {
+    text-decoration: underline;
+}
+
+/* 5. Formulir & Tombol */
+.app-form fieldset {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+}
+
+.app-form legend {
+    font-weight: 600;
+    padding: 0 8px;
+    color: var(--primary);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 8px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.form-input, .form-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.form-input:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.form-help {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.form-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-secondary {
+    background-color: #e2e8f0;
+    color: var(--text-main);
+}
+
+.btn-warning {
+    background-color: #f59e0b;
+    color: #ffffff;
+}
+
+.btn-warning:hover {
+    background-color: #d97706;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+/* Modal Dialog */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    padding: 16px;
+}
+
+.modal-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-dialog {
+    background-color: #ffffff;
+    border-radius: var(--radius);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: 600px;
+    overflow: hidden;
+    transform: scale(0.95) translateY(-10px);
+    transition: transform 0.25s ease;
+}
+
+.modal-backdrop.active .modal-dialog {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--text-main);
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: calc(85vh - 140px);
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background-color: #f8fafc;
+}
+
+/* 6. Footer */
+.site-footer {
+    background-color: #0f172a;
+    color: #94a3b8;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 0.85rem;
+    margin-top: auto;
+}
+
+.site-footer a {
+    color: #60a5fa;
+    text-decoration: none;
+}
+
+/* 7. Media Query Sederhana (Breakpoint Mobile 768px) */
+@media (max-width: 768px) {
+    .header-brand {
+        flex-direction: column;
+        text-align: center;
+    }
+    .info-grid {
+        flex-direction: column;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .site-nav ul {
+        justify-content: center;
+    }
+    .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
