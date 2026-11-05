@@ -10,7 +10,7 @@ class Database {
     private string $db_name = 'db_mahasiswa';
     private string $username = 'root';
     private string $password = '';
-    private int $port = 3306;
+    private int $port = 3308;
     private ?PDO $conn = null;
 
     public function getConnection(): PDO {
